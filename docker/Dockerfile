@@ -2,9 +2,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /app
 
-# Native module build deps (required by better-sqlite3)
-RUN apk add --no-cache python3 make g++
-
 COPY package*.json ./
 COPY prisma ./prisma
 RUN npm ci
@@ -19,7 +16,6 @@ RUN npm run build
 FROM node:22-alpine
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Install production deps (includes prisma + better-sqlite3, rebuilt for this image)
@@ -28,6 +24,7 @@ COPY prisma ./prisma
 RUN npm ci --omit=dev
 
 # Re-generate Prisma client in runner stage
+RUN npm install prisma@$(node -p "require('./package.json').devDependencies.prisma") --no-save
 RUN node_modules/.bin/prisma generate
 
 # Copy built Next.js output

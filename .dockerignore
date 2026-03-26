@@ -1,0 +1,13 @@
+.git
+.github
+.next
+app/generated
+docker/*
+!docker/docker-entrypoint.sh
+node_modules
+.dockerignore
+.env
+.env.example
+.gitignore
+*.log
+*.db
